@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 import Register from "./Register"
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from "../firebase/db.js";
-
+import { useRouter } from 'expo-router';
 const Login = () => {
     const [email,setemail]=useState("")
     const [password,setpassword]=useState("")
     const [page,setpage]=useState("login")
     const [showPassword, setShowPassword] = useState(false);
     const [user, setUser] = useState(null);
-
+    const router = useRouter(); 
 const handlesubmit=()=>{
   firebase.auth().signInWithEmailAndPassword(email,password).then(response =>{
     const uid=response.user.uid
@@ -20,7 +20,9 @@ const handlesubmit=()=>{
         alert("user does not exist")
         return;
       }
-      setUser(document)
+      setUser(document.data())
+      router.push('/');
+      
     })     .catch((error) => {
       alert(error);
     });

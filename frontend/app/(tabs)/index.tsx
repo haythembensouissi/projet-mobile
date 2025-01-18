@@ -4,13 +4,17 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,createContext, useContext } from 'react';
 import firebase from 'firebase/compat/app';
-
+import { AuthContext } from '@/firebase/Authcontext';
 import { useRouter } from 'expo-router';
 import Login from "../Login"
 export default function HomeScreen() {
-  const [user, setUser] = useState<{ [key: string]: any } | null>(null);
+  const auth = useContext(AuthContext);
+ const [userData,setUser]=useState({email:"",
+username:"",
+role:"",id:""
+})
   const router = useRouter();
   const handleSignOut = () => {
     firebase.auth().signOut().then(() => {
@@ -19,31 +23,40 @@ export default function HomeScreen() {
       console.error("Sign out error:", error);
     });
   };
-  useEffect(() => {
-    const userRef = firebase.firestore().collection("users");
-  
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+  const getUser = () => {
+    const usersRef = firebase.firestore().collection("users");
+    firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
-        userRef.doc(user.uid).get().then((document) => {
-          const userdata = document.data() || null;
-          setUser(userdata);
-        }).catch(() => {
-          setUser(null);
+        await usersRef.doc(user.uid).get().then((document) => {
+          if (document.exists) {
+            const data = document.data() || {};
+            setUser({ 
+              id: document.id,
+              email: data.email || '',
+              username: data.username || '',
+              role: data.role || '',
+            });
+          
+          } else {
+            console.warn('No user document found.');
+          }
+        }).catch((error) => {
+          console.error("Error fetching user data:", error);
         });
-      } else {
-        setUser(null);
       }
     });
-
+  };
+  
+  useEffect(() => {
+  getUser()
    
-
-    return () => unsubscribe();
   }, []);
 
   
   return (
    <View style={styles.container}>
       <Button title="Sign Out" onPress={handleSignOut} />
+      <Text>{userData.email}</Text>
    </View>
   );
   }
