@@ -1,109 +1,161 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Image,
+  FlatList,
+  ScrollView,
+  Platform,
+  useColorScheme,
+} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { SelectList } from "react-native-dropdown-select-list";
+import {firebase} from "../../firebase/db"
+import { async } from "@firebase/util";
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
+const Addbook = () => {
+  const [title,setTitle]=useState("")
+  const [author,setauthor]=useState("")
+  const [genre,setgenre]=useState("")
+  const ref=firebase.firestore().collection("books")
+const handlesubmit=async()=>
+{
+await ref.add({
+  title:title,
+  isAvailable:true
+})
+setTitle("")
+setauthor("")
+setgenre("choisir le genre")
 }
+const data=["adventure","drama","action","comedy"]
+return (
+  <View>
+    <TextInput multiline={false} value={title} onChangeText={setTitle} style={styles.input} placeholder="what is the title"/>
+    <TextInput value={author} onChangeText={setauthor} style={styles.input} placeholder="what is the author"/>
+    <SelectList setSelected={setgenre} placeholder="choisir le genre" data={data}/>
+    
+    <View style={styles.button}>
+      <TouchableOpacity style={styles.but} onPress={() => handlesubmit()}>
+        <Text style={styles.buttontext}>Add</Text>
+      </TouchableOpacity>
+  S</View>
+  </View>
+)
+}
+const styles= StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  inputcontainer: {
+    width: "100%",
+    height: "-50%",
+    
+    marginBottom: 40,
+  },
+  input: {
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+    textAlignVertical: "top",
+
+    width: "100%",
+    
+    height:50,
+    padding: 12,
+    borderRadius: 5,
+    //     box-sizing: border-box;
+    //     border: 2px solid #ccc;
+    //     border-radius: 4px;
+    //     background-color: #f8f8f8;
+    //     font-size: 16px;
+    //     resize: none;
+    //   }
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  button: {
+    backgroundColor: "#00B2FF",
+    padding: 15,
+    paddingLeft: 10,
+    paddingRight: 10,
+    fontSize: 16,
+    height: 48,
+    borderRadius: 5,
+    marginVertical: 3,
+    marginBottom: 10,
+    marginTop: 10, 
+    marginLeft: 85,
+
   },
+  but: {
+    textAlign: "center",
+    alignItems: "center",
+  },
+  buttontext: {
+    color: "white",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  buttoncontainer: {
+    width: "100%",
+    display: "flex",
+    alignContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    margin: 10,
+  },
+  camerabutton: {
+    marginTop: 20,
+
+    width: 50,
+    height: 50,
+    textAlign: "center",
+    backgroundColor: "#14b8a6",
+    flex: 1,
+    borderRadius: 10,
+  },
+  pdfbut: {
+    marginTop: 20,
+
+    width: 50,
+    height: 50,
+    textAlign: "center",
+    backgroundColor: "#14b8a6",
+    flex: 1,
+    borderRadius: 10,
+  },
+  localisation: {
+    marginTop: 20,
+    borderRadius: 10,
+
+    width: 50,
+    height: 50,
+    textAlign: "center",
+    backgroundColor: "#14b8a6",
+    flex: 1,
+    marginLeft: 10,
+    margin: 10,
+  },
+  author:{
+    fontWeight: "bold",
+    fontSize: 15,
+    marginTop: 20,
+    marginLeft: 5
+},
+author1:{
+  fontWeight: "bold",
+  fontSize: 15,
+  marginTop: 25,
+  marginLeft: 15,
+},
 });
+
+export default Addbook
