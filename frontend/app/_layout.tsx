@@ -19,7 +19,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const [user, setUser] = useState<{ [key: string]: any } | null>({});
+  const [user, setUser] = useState<{ [key: string]: any } | null>(null);
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -42,6 +42,7 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {user ? (

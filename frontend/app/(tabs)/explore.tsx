@@ -21,6 +21,37 @@ const Addbook = () => {
   const [title,setTitle]=useState("")
   const [author,setauthor]=useState("")
   const [genre,setgenre]=useState("")
+  const [userData,setUser]=useState({email:"",
+  username:"",
+  role:"",id:""
+  })
+  const getUser = () => {
+    const usersRef = firebase.firestore().collection("users");
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        await usersRef.doc(user.uid).get().then((document) => {
+          if (document.exists) {
+            const data = document.data() || {};
+            setUser({
+              id: document.id,
+              email: data.email || '',
+              username: data.username || '',
+              role: data.role || '',
+            });
+          
+          } else {
+            console.warn('No user document found.');
+          }
+        }).catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+      }
+    });
+  };
+  useEffect(() => {
+    getUser()
+     
+    }, []);
   const ref=firebase.firestore().collection("books")
 const handlesubmit=async()=>
 {
@@ -43,7 +74,7 @@ return (
       <TouchableOpacity style={styles.but} onPress={() => handlesubmit()}>
         <Text style={styles.buttontext}>Add</Text>
       </TouchableOpacity>
-  S</View>
+  </View>
   </View>
 )
 }

@@ -2,12 +2,16 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from "../firebase/db.js";
+import { SelectList } from "react-native-dropdown-select-list";
+
 import bcrypt from 'bcryptjs'; 
 const Register = ({ page, setpage }) => {
   const [username, setusername] = useState("");
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
+  const [role, setrole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const data=["admin","normal user"]
 
   const handlesubmit = () => {
    firebase.auth().createUserWithEmailAndPassword(email,password).then((response )=>{
@@ -16,7 +20,8 @@ const Register = ({ page, setpage }) => {
       id:uid,
       username:username,
       email:email,
-      password:password
+      password:password,
+      role:role
     }
     const usersRef = firebase.firestore().collection("users");
         usersRef
@@ -67,6 +72,7 @@ const Register = ({ page, setpage }) => {
             />
           </TouchableOpacity>
         </View>
+        <SelectList setSelected={setrole} placeholder="choisir le role" data={data}/>
         <TouchableOpacity style={styles.button} onPress={handlesubmit}>
           <Text>Register</Text>
         </TouchableOpacity>
