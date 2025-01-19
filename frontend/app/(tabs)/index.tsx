@@ -54,9 +54,11 @@ role:"",id:""
 
   
   return (
-   <View style={styles.container}>
-      <Button title="Sign Out" onPress={handleSignOut} />
-      <Text>{userData.email}</Text>
+    <View >
+    <View style={styles.signoutbuttoncontainer}>
+     <Button title="Sign Out" onPress={handleSignOut} />
+   </View>
+   <View></View>
    </View>
   );
   }
@@ -68,4 +70,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width:"30%"
   },
+  signoutbuttoncontainer:{
+    width:"30%",
+    height:"30%",
+marginTop:"20%",
+marginLeft:"70%"
+  }
 });
