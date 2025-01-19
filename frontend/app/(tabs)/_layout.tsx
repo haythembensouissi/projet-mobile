@@ -1,20 +1,24 @@
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, ActivityIndicator, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import {firebase} from "../../firebase/db"
+import { firebase } from "../../firebase/db";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const [userData,setUser]=useState({email:"",
-  username:"",
-  role:"",id:""
-  })
+  const [userData, setUser] = useState({
+    email: '',
+    username: '',
+    role: '',
+    id: '',
+  });
+  const [loading, setLoading] = useState(true); // Loading state
+
   const getUser = () => {
     const usersRef = firebase.firestore().collection("users");
     firebase.auth().onAuthStateChanged(async (user) => {
@@ -28,21 +32,32 @@ export default function TabLayout() {
               username: data.username || '',
               role: data.role || '',
             });
-          
           } else {
             console.warn('No user document found.');
           }
         }).catch((error) => {
           console.error("Error fetching user data:", error);
+        }).finally(() => {
+          setLoading(false); // Set loading to false after fetching data
         });
+      } else {
+        setLoading(false); // Handle case where user is not authenticated
       }
     });
   };
-  
+
   useEffect(() => {
-  getUser()
-   
+    getUser();
   }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
+      </View>
+    );
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -56,7 +71,6 @@ export default function TabLayout() {
         }),
       }}
     >
-      
       <Tabs.Screen
         name="index"
         options={{
@@ -64,15 +78,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
-      
-   <Tabs.Screen
-        name="explore"
+      <Tabs.Screen
+        name="addbook"
         options={{
+          href: userData.role === "admin" ? "/addbook" : null,
           title: 'Add Book',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
-      
     </Tabs>
   );
 }
