@@ -60,7 +60,7 @@ export default function Page() {
       status: 'emprunté',
     });
     await bookref.doc(bookId).update({
-      disponibilte:"non disponible"
+      disponibilite:"non disponible"
     }) .then(() => {
       console.log('Book availability updated');
     })
