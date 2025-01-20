@@ -1,18 +1,18 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { firebase } from "../firebase/db.js";
 import { SelectList } from "react-native-dropdown-select-list";
 
-const Register = ({ page, setpage }) => {
-  const [username, setusername] = useState("");
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
-  const [role, setrole] = useState("");
+const Register = ({ page, setPage }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const data = ["admin", "normal user"];
 
-  const handlesubmit = () => {
+  const handleSubmit = () => {
     firebase.auth().createUserWithEmailAndPassword(email, password).then((response) => {
       const uid = response.user.uid;
       const data = {
@@ -28,9 +28,9 @@ const Register = ({ page, setpage }) => {
         .set(data)
         .then(() => {
           alert("User added");
-          setemail("");
-          setusername("");
-          setpassword("");
+          setEmail("");
+          setUsername("");
+          setPassword("");
         })
         .catch((error) => {
           alert(error);
@@ -41,109 +41,167 @@ const Register = ({ page, setpage }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {page === "login" ? (
-        <Login />
-      ) : (
-        <View style={styles.formContainer}>
-          <TextInput
-            value={username}
-            onChangeText={setusername}
-            placeholder="Username"
-            style={styles.input}
-          />
-          <TextInput
-            value={email}
-            onChangeText={setemail}
-            placeholder="Email"
-            style={styles.input}
-            keyboardType="email-address"
-          />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              value={password}
-              secureTextEntry={!showPassword}
-              onChangeText={setpassword}
-              placeholder="Password"
-              style={[styles.input, styles.passwordInput]}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.iconContainer}>
-              <Ionicons
-                name={showPassword ? "eye-off" : "eye"}
-                size={24}
-                color="gray"
+      <View style={styles.container}>
+        {page === "login" ? (
+          <Login />
+        ) : (
+          <View style={styles.formContainer}>
+            {/* Title */}
+            <Text style={styles.title}>Register</Text>
+
+            {/* Username Input */}
+            <View style={styles.inputContainer}>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Username"
+                placeholderTextColor="#000" // Black placeholder
+                style={styles.input}
               />
+            </View>
+
+            {/* Email Input */}
+            <View style={styles.inputContainer}>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                placeholderTextColor="#000" // Black placeholder
+                style={styles.input}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <TextInput
+                value={password}
+                secureTextEntry={!showPassword}
+                onChangeText={setPassword}
+                placeholder="Password"
+                placeholderTextColor="#000" // Black placeholder
+                style={styles.input}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.iconContainer}
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={24}
+                  color="gray"
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Role Selection */}
+            <View style={styles.roleContainer}>
+              <SelectList
+                setSelected={setRole}
+                placeholder="Choose Role"
+                placeholderTextColor="#000" // Black placeholder
+                data={data}
+                search={false}
+                boxStyles={styles.selectListBox}
+                inputStyles={styles.selectListInput}
+                dropdownStyles={styles.selectListDropdown}
+              />
+            </View>
+
+            {/* Register Button */}
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Register</Text>
+            </TouchableOpacity>
+
+            {/* Login Link */}
+            <TouchableOpacity onPress={() => setPage("login")} style={styles.linkContainer}>
+              <Text>Have an account? </Text>
+              <Text style={styles.linkText}>Login</Text>
             </TouchableOpacity>
           </View>
-          <SelectList setSelected={setrole} placeholder="Choose Role" data={data} style={styles.selectList} />
-          <TouchableOpacity style={styles.button} onPress={handlesubmit}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setpage("login")} style={styles.linkContainer}>
-            <Text>Have an account? </Text><Text style={styles.linkText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F2F2F2",
-    paddingHorizontal: 20,
+    width: "100%",
   },
   formContainer: {
-    width: "100%",
+    width: "90%",
     maxWidth: 400,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.9)", // Semi-transparent white background
     borderRadius: 8,
-    elevation: 5,
-    shadowColor: "#000",
+    elevation: 5, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
     shadowOpacity: 0.1,
     shadowRadius: 5,
+    alignItems: "center",
   },
-  input: {
-    backgroundColor: "#fff",
-    marginTop: 15,
-    width: "100%",
-    height: 50,
-    padding: 12,
-    borderRadius: 5,
-    borderColor: "#ddd",
-    borderWidth: 1,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
   },
-  passwordContainer: {
+  inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 15,
     width: "100%",
-  },
-  passwordInput: {
-    flex: 1,
-  },
-  iconContainer: {
-    marginLeft: 10,
-  },
-  selectList: {
-    marginTop: 25, // Increased margin to create space between password and role inputs
+    borderColor: "#ddd",
     borderWidth: 1,
     borderRadius: 5,
+    backgroundColor: "#fff",
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    padding: 12,
+  },
+  iconContainer: {
+    padding: 10,
+  },
+  roleContainer: {
+    width: "100%",
+    marginTop: 15,
+  },
+  selectListBox: {
+    borderWidth: 1,
     borderColor: "#ddd",
+    borderRadius: 5,
     paddingHorizontal: 12,
     paddingVertical: 10,
+  },
+  selectListInput: {
+    color: "#000", // Black text for selected value
+  },
+  selectListDropdown: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    marginTop: 5,
   },
   button: {
     backgroundColor: "#00B2FF",
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
+    width: "100%",
     alignItems: "center",
-    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
@@ -153,7 +211,6 @@ const styles = StyleSheet.create({
   linkContainer: {
     marginTop: 15,
     alignItems: "center",
-    justifyContent: "center",
   },
   linkText: {
     color: "#00B2FF",
