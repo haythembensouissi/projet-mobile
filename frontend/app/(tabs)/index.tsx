@@ -43,7 +43,6 @@ useEffect(() => {
           description: doc.data().description || "No description available.",
           image: doc.data().image || "https://via.placeholder.com/150",
         }));
-        console.log("Fetched books:", booksData); // Check if data is correctly fetched
         setBooks(booksData);
       }
     } catch (error) {
@@ -116,7 +115,7 @@ useEffect(() => {
       </View>
 
       {/* Render the GetAllBooks component */}
-      <GetAllBooks user={userData} books={books}  />
+      <GetAllBooks  user={userData} books={books} fetchBooks={fetchBooks} />
     </ScrollView>
   );
 }
