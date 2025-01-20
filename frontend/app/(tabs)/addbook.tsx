@@ -13,21 +13,77 @@ import {
     useColorScheme,
   } from "react-native";
   import React, { useCallback, useEffect, useState } from "react";
+  import { Entypo, FontAwesome, AntDesign,Ionicons,Feather,SimpleLineIcons } from "@expo/vector-icons";
   import { SelectList } from "react-native-dropdown-select-list";
   import { firebase } from "../../firebase/db";
   import { async } from "@firebase/util";
-  
+  import * as ImagePicker from "expo-image-picker";
   const Addbook = () => {
+    const [uploading, setUploading] = useState(false);
     const [title, setTitle] = useState("");
     const [author, setauthor] = useState("");
     const [genre, setgenre] = useState("");
+    const [image, setImage] = useState<{ uri: string } | null>(null);
     const [userData, setUser] = useState({
       email: "",
       username: "",
       role: "",
       id: "",
     });
-  
+    const PickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+    
+      if (!result.canceled) {
+        const source = { uri: result.assets[0].uri }; // Updated for latest API
+        setImage(source);
+      }
+    };
+    
+    const UploadImage = async () => {
+      if (!image) {
+        console.warn("No image selected.");
+        return;
+      }
+      setUploading(true);
+      try {
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+        const filename = image.uri.substring(image.uri.lastIndexOf("/") + 1);
+        const storageRef = firebase.storage().ref().child(filename);
+    
+        const uploadTask = storageRef.put(blob);
+    
+        return new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log(`Upload is ${progress}% done`);
+            },
+            (error) => {
+              console.error("Error during upload:", error);
+              reject(error);
+            },
+            async () => {
+              const downloadURL = await storageRef.getDownloadURL();
+              console.log("File available at:", downloadURL);
+              setImage(null); // Reset the image after upload
+              resolve(downloadURL); // Return the URL
+            }
+          );
+        });
+      } catch (e) {
+        console.error("Error uploading image:", e);
+      } finally {
+        setUploading(false);
+      }
+    };
+    
     const getUser = () => {
       const usersRef = firebase.firestore().collection("users");
       firebase.auth().onAuthStateChanged(async (user) => {
@@ -64,7 +120,10 @@ import {
     const handlesubmit = async () => {
       await ref.add({
         title: title,
+        author:author,
+        genre:genre,
         isAvailable: true,
+        image:image?.uri
       });
       setTitle("");
       setauthor("");
@@ -94,7 +153,14 @@ import {
           data={data}
           style={styles.selectList}
         />
-  
+  <TouchableOpacity onPress={PickImage}>
+            <SimpleLineIcons
+              name="camera"
+              style={{ marginTop: 20, marginLeft: 10}}
+              color="#00B2FF" 
+              size={30}
+            ></SimpleLineIcons>
+          </TouchableOpacity>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => handlesubmit()}>
             <Text style={styles.buttonText}>Add Book</Text>
