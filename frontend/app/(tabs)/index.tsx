@@ -12,6 +12,7 @@ export default function HomeScreen() {
     author: string;
     description: string;
     image: string;
+    disponibilite:string
   };
   
   const [books, setBooks] = useState<Book[]>([]);
@@ -42,6 +43,7 @@ useEffect(() => {
           author: doc.data().author || "Unknown Author",
           description: doc.data().description || "No description available.",
           image: doc.data().image || "https://via.placeholder.com/150",
+          disponibilite:doc.data().disponibilite
         }));
         setBooks(booksData);
       }

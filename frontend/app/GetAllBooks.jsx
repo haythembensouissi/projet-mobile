@@ -40,23 +40,20 @@ const handleEdit = (bookId) => {
       <Text style={styles.author}>By {item.author}</Text>
       <Text style={styles.description}>{item.description}</Text>
       
-      <TouchableOpacity style={styles.linkButton}>
-        <Link
-          href={{
-            pathname: `/emprunt/${item.id}`,
-            params: { id: item.id, user, userid: user.id },
-          }}
-          push
-        >
-          <Text style={styles.linkButtonText}>Emprunter</Text>
-        </Link>
-      </TouchableOpacity>
+      
       <View style={styles.iconContainer}>
         {/* Save Icon */}
-        <TouchableOpacity onPress={() => handleSave(item.id)}>
-          <Ionicons name="bookmark-outline" size={24} color="#000" />
+        {item.disponibilite=="disponible"&&  <TouchableOpacity onPress={() => handleSave(item.id)}>
+        <Link
+        href={{
+          pathname: `/emprunt/${item.id}`,
+          params: { id: item.id, user, userid: user.id },
+        }}
+        push
+      > <Ionicons name="bookmark-outline" size={24} color="#000" />  </Link>
         </TouchableOpacity>
-
+}
+      
         {/* Like Icon */}
         <TouchableOpacity onPress={() => handleLike(item.id)}>
           <Ionicons name="heart-outline" size={24} color="#ff0000" />

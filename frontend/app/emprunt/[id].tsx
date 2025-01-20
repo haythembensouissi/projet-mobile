@@ -15,7 +15,7 @@ export default function Page() {
     id: '',
   });
   const router = useRouter();
-
+  const bookId = Array.isArray(id) ? id[0] : id;
   const getUser = () => {
     const usersRef = firebase.firestore().collection('users');
 
@@ -44,8 +44,8 @@ export default function Page() {
     });
   };
 
-  const ref = firebase.firestore().collection('emprunt');
-
+  const ref = firebase.firestore().collection('emprunts');
+  const bookref=firebase.firestore().collection('books')
   useEffect(() => {
     getUser();
   }, []);
@@ -58,6 +58,14 @@ export default function Page() {
       bookid: id,
       dateemprunt: dateemprunt,
       status: 'emprunté',
+    });
+    await bookref.doc(bookId).update({
+      disponibilte:"non disponible"
+    }) .then(() => {
+      console.log('Book availability updated');
+    })
+    .catch((error) => {
+      console.error('Error updating book availability:', error);
     });
     router.push('/');
   };
