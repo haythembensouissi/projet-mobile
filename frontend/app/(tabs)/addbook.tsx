@@ -76,10 +76,7 @@ const Addbook = () => {
   };
 
   const handleSubmit = async () => {
-    let imageUrl = null;
-    if (selectedImage) {
-      imageUrl = await uploadImage(); // Upload image and get URL
-    }
+   
 
     const ref = firebase.firestore().collection("books");
     await ref.add({
@@ -87,7 +84,7 @@ const Addbook = () => {
       author: author,
       genre: genre,
       isAvailable: true,
-      image: imageUrl, // Use the uploaded image URL
+      image: selectedImage?.uri, // Use the uploaded image URL
     });
     setTitle("");
     setAuthor("");

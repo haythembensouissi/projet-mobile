@@ -23,7 +23,8 @@ const UpdateBook = () => {
   const [imageUri, setImageUri] = useState("");
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
-
+  const [disponibilite, setdisponibilite] = useState("");
+const data2=["disponible","non disponible"]
   const ref = firebase.firestore().collection("books");
   const router = useRouter();
 
@@ -66,7 +67,9 @@ const UpdateBook = () => {
         title: title,
         author: author,
         genre: genre,
-        image: image ? image.uri : imageUri, // Use the new image URI or the existing one
+        image: image ? image.uri : imageUri,
+
+        disponibilite:disponibilite // Use the new image URI or the existing one
       });
       Alert.alert("Success", "Book updated successfully.");
       router.push("/");
@@ -114,6 +117,14 @@ const UpdateBook = () => {
         inputStyles={styles.selectListInput} // Style the input text
         dropdownStyles={styles.selectListDropdown} // Style the dropdown
       />
+      <SelectList
+      setSelected={setdisponibilite}
+      placeholder="selectionner la disponibilité"
+      data={data2}
+      boxStyles={styles.selectListBox}
+      inputStyles={styles.selectListInput}
+      dropdownStyles={styles.selectListDropdown}
+    />
       <TouchableOpacity onPress={PickImage}>
         <SimpleLineIcons
           name="camera"
@@ -122,6 +133,8 @@ const UpdateBook = () => {
           size={30}
         />
       </TouchableOpacity>
+     
+  
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleUpdate}>
           <Text style={styles.buttonText}>Update Book</Text>
