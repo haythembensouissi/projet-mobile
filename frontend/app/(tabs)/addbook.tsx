@@ -83,7 +83,7 @@ const Addbook = () => {
       title: title,
       author: author,
       genre: genre,
-      isAvailable: true,
+      disponibilite:"disponible",
       image: selectedImage?.uri, // Use the uploaded image URL
     });
     setTitle("");
